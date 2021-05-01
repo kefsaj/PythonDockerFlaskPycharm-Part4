@@ -71,13 +71,23 @@ def form_delete_post(age_id):
     return redirect("/", code=302)
 
 @app.route('/api/v1/actress', methods=['GET'])
+def api_browse():
+    #user = {'username': 'Female Oscar Winner Ages'}
+    cursor = mysql.get_db().cursor()
+    cursor.execute('SELECT * FROM femaleOscarAges ORDER BY fldyear')
+    result = cursor.fetchall()
+    return render_template('index.html', title='Home', user=user, actress=result)
+
+"""
+@app.route('/api/v1/actress', methods=['GET'])
 def api_browse() -> str:
     cursor = mysql.get_db().cursor()
     cursor.execute('SELECT * FROM femaleOscarAges')
     result = cursor.fetchall()
-    json_result = json.dumps(result)
+    json_result = json.dumps(result);
     resp = Response(json_result, status=200, mimetype='application/json')
     return resp
+    """
 
 @app.route('/api/v1/actress/<int:age_id>', methods=['GET'])
 def api_retrieve(age_id) -> str:
@@ -88,18 +98,44 @@ def api_retrieve(age_id) -> str:
     resp = Response(json_result, status=200, mimetype='application/json')
     return resp
 
-@app.route('/api/v1/actress/', methods=['POST'])
-def api_add() -> str:
+@app.route('/api/v1/actress/<int:age_id>', methods=['PUT'])
+def api_edit(age_id) -> str:
+    cursor = mysql.get_db().cursor()
+    content = request.json
+    inputData = (request.form.get('fldYear'), request.form.get('fldAge'), request.form.get('fldName'),
+                 request.form.get('fldFilm'), age_id)
+    sql_update_query = """UPDATE femaleOscarAges t SET t.fldYear = %s, t.fldAge = %s, t.fldName = %s, t.fldFilm = 
+      %s WHERE t.id = %s """
+    cursor.execute(sql_update_query, inputData)
+    mysql.get_db().commit()
     resp = Response(status=201, mimetype='application/json')
     return resp
 
 @app.route('/api/v1/actress/<int:age_id>', methods=['PUT'])
-def api_edit(age_id) -> str:
+def api_add(age_id) -> str:
+    cursor = mysql.get_db().cursor()
+    content = request.json
+    inputData = (request.form.get('fldYear'), request.form.get('fldAge'), request.form.get('fldName'),
+                 request.form.get('fldFilm'), age_id)
+    sql_update_query = """UPDATE femaleOscarAges t SET t.fldYear = %s, t.fldAge = %s, t.fldName = %s, t.fldFilm = 
+      %s WHERE t.id = %s """
+    cursor.execute(sql_update_query, inputData)
+    mysql.get_db().commit()
     resp = Response(status=201, mimetype='application/json')
     return resp
 
+"""
+@app.route('/api/v1/actress/', methods=['POST'])
+def api_add() -> str:
+    resp = Response(status=201, mimetype='application/json')
+   return resp
+"""
 @app.route('/api/actress/<int:age_id>', methods=['DELETE'])
 def api_delete(age_id) -> str:
+    cursor = mysql.get_db().cursor()
+    sql_delete_query = """DELETE FROM femaleOscarAges WHERE id = %s """
+    cursor.execute(sql_delete_query, inputData)
+    mysql.get_db().commit()
     resp = Response(status=210, mimetype='application/json')
     return resp
 
