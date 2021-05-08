@@ -5,6 +5,7 @@ from flask import render_template
 from flaskext.mysql import MySQL
 from pymysql.cursors import DictCursor
 
+
 app = Flask(__name__)
 mysql = MySQL(cursorclass=DictCursor)
 
@@ -76,18 +77,21 @@ def api_browse():
     cursor = mysql.get_db().cursor()
     cursor.execute('SELECT * FROM femaleOscarAges ORDER BY fldyear')
     result = cursor.fetchall()
-    return render_template('index.html', title='Home', user=user, actress=result)
+    #return render_template('index.html', title='Home', user=user, actress=result)
+    return render_template('index.html', title='Home',  actress=result)
 
-"""
-@app.route('/api/v1/actress', methods=['GET'])
-def api_browse() -> str:
+    #return render_template('index.html', title='Home', user=root, actress=result)
+
+
+@app.route('/api/v1/actress/', methods=['GET'])
+def api_browser() -> str:
     cursor = mysql.get_db().cursor()
     cursor.execute('SELECT * FROM femaleOscarAges')
     result = cursor.fetchall()
     json_result = json.dumps(result);
     resp = Response(json_result, status=200, mimetype='application/json')
     return resp
-    """
+
 
 @app.route('/api/v1/actress/<int:age_id>', methods=['GET'])
 def api_retrieve(age_id) -> str:
