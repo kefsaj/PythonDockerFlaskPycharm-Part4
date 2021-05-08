@@ -77,11 +77,7 @@ def api_browse():
     cursor = mysql.get_db().cursor()
     cursor.execute('SELECT * FROM femaleOscarAges ORDER BY fldyear')
     result = cursor.fetchall()
-    #return render_template('index.html', title='Home', user=user, actress=result)
     return render_template('index.html', title='Home',  actress=result)
-
-    #return render_template('index.html', title='Home', user=root, actress=result)
-
 
 @app.route('/api/v1/actress/', methods=['GET'])
 def api_browser() -> str:
@@ -92,6 +88,15 @@ def api_browser() -> str:
     resp = Response(json_result, status=200, mimetype='application/json')
     return resp
 
+@app.route('/api/v1/actress/', methods=['POST'])
+def create_post(age_id):
+    cursor = mysql.get_db().cursor()
+    inputData = (request.form.get('fldYear'), request.form.get('fldAge'), request.form.get('fldName'),
+                 request.form.get('fldFilm'))
+    sql_insert_query = """INSERT INTO femaleOscarAges (fldYear,fldAge,fldName,fldFilm) VALUES (%s,%s,%s,%s) """
+    cursor.execute(sql_insert_query, inputData)
+    mysql.get_db().commit()
+    return redirect("/", code=302)
 
 @app.route('/api/v1/actress/<int:age_id>', methods=['GET'])
 def api_retrieve(age_id) -> str:
